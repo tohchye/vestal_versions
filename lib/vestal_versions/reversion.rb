@@ -32,7 +32,7 @@ module VestalVersions
         changes_between(version, to_number).each do |attribute, change|
           write_attribute(attribute, change.last)
         end
-        
+
         reset_version(to_number)
       end
 
@@ -50,6 +50,15 @@ module VestalVersions
         version != last_version
       end
 
+      # Returns an array of reverted versions excluding the latest version
+      def revisions
+        versions.map do |version|
+          version.number
+        end.unshift(1).map do |version_number|
+          revert_to(version_number)
+          self.clone
+        end[0..-2]
+      end
 
       private
 
@@ -64,7 +73,7 @@ module VestalVersions
           end
         end
 
-      
+
         # Returns the number of the last created version in the object's version history.
         #
         # If no associated versions exist, the object is considered at version 1.
